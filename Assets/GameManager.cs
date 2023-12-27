@@ -6,16 +6,27 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public List<TMP_InputField> guessFields;
-    private string wordToGuess = "Chris";
+    private List<string> wordsToGuess = new List<string>() { "chris", "trust" , "prize" };
+    private string wordToGuess="";
     public TMP_Text scoreText;
-
+    public TMP_Text guessCountText;
+    public GameObject instructionWindow;
+    private int guessCount = 0;
+    private int score = 0;
     public void GuessClicked()
     {
-        wordToGuess = wordToGuess.ToUpper();
-        var score = 0;
+        if (wordToGuess == "") {
+            wordToGuess = wordsToGuess[Random.Range(0, wordsToGuess.Count)];
+        }
+        if (score == 100)
+        {
+            guessCount = 0;
+        }
+        score = 0;
+        guessCount++;
         for(int i = 0; i < guessFields.Count; i++)
         {
-            var letterToGuess = guessFields[i].text.ToUpper();
+            var letterToGuess = guessFields[i].text.ToLower();
             if (wordToGuess[i].ToString() == letterToGuess)
             {
                 score = score + 20;
@@ -25,6 +36,14 @@ public class GameManager : MonoBehaviour
                 score = score + 10;
             }
         }
-        scoreText.text = "Your Score is:" + score;
+        scoreText.text = "Similarity: " + score;
+        guessCountText.text = "Guess Count: " + guessCount;
+        if (score == 100)
+        {
+            wordToGuess = wordsToGuess[Random.Range(0, wordsToGuess.Count)];
+        }
+    }
+    public void InstructionCloser(bool close) {
+        instructionWindow.SetActive(close);
     }
 }
