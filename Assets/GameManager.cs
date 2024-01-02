@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
     public GameObject instructionWindow;
     private int guessCount = 0;
     private int score = 0;
+    public GameObject guessRecordPrefab;
+    public GameObject content;
     public void GuessClicked()
     {
         if (wordToGuess == "") {
@@ -45,6 +47,9 @@ public class GameManager : MonoBehaviour
         {
             wordToGuess = wordsToGuess[Random.Range(0, wordsToGuess.Count)];
         }
+        var guessRecord = Instantiate(guessRecordPrefab, content.transform);
+        guessRecord.transform.Find("Guess").GetComponent<TextMeshProUGUI>().text = guessField.text;
+        guessRecord.transform.Find("Score").GetComponent<TextMeshProUGUI>().text = score.ToString();
     }
     public void InstructionCloser(bool close) {
         instructionWindow.SetActive(close);
