@@ -6,7 +6,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public List<TMP_InputField> guessFields;
-    private List<string> wordsToGuess = new List<string>() { "chris", "trust" , "prize" };
+    private List<string> wordsToGuess = new List<string>() { "chris", "trust" , "prize" , "eagle" , "extra" , "jazzy", "dizzy" , "quick" , "jerky" , "trick" , "jelly" , "about" , "brain" , "brand" , "bread" , "break" , "alert" , "carry" , "catch" , "cause" , "chain" , "beach" , "cream" , "crime" , "cross" , "crowd" , "award" , "civil" , "brief" , "broke" , "debut" , "doubt" , "dozen" , "equal" , "error" , "every" , "extra" , "faith" , "guest" , "dealt" , "guide" , "heavy" , "night" , "funny" , "fifth" , "eager" , "earth" , "eight" , "first" , "input" , "metal" , "noted" , "month" , "ocean" , "learn" , "magic" , "mayor" , "paper" , "party" , "route" , "royal" , "scale" , "scene" , "refer" , "plain" , "proud" , "share" , "shelf" , "table" , "split" , "tower" , "trade" , "treat" , "truck" , "solve" , "upset" , "whole" , "valid" , "wrong" , "wheel" , "vital" , "voice" , "story" , "south" , "third" , "smart"};
     private string wordToGuess="";
     public TMP_Text scoreText;
     public TMP_Text guessCountText;
