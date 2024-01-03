@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     private int score = 0;
     public GameObject guessRecordPrefab;
     public GameObject content;
+    private List<GameObject> guessRecords = new List<GameObject>();
     public void GuessClicked()
     {
         if (wordToGuess == "") {
@@ -24,6 +25,11 @@ public class GameManager : MonoBehaviour
         if (score == 100)
         {
             guessCount = 0;
+            foreach (var record in guessRecords)
+            {
+                Destroy(record);
+            }
+            guessRecords.Clear();
         }
         score = 0;
         guessCount++;
@@ -50,6 +56,7 @@ public class GameManager : MonoBehaviour
         var guessRecord = Instantiate(guessRecordPrefab, content.transform);
         guessRecord.transform.Find("Guess").GetComponent<TextMeshProUGUI>().text = guessField.text;
         guessRecord.transform.Find("Score").GetComponent<TextMeshProUGUI>().text = score.ToString();
+        guessRecords.Add(guessRecord);
     }
     public void InstructionCloser(bool close) {
         instructionWindow.SetActive(close);
