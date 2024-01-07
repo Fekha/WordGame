@@ -1,30 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager i;
     public TMP_InputField guessField;
-    private List<string> wordsToGuess = new List<string>() { "chris", "trust" , "prize" , "eagle" , "extra" , "jazzy", "dizzy" , "quick" , "jerky" , "trick" , "jelly" , "about" , "brain" , "brand" , "bread" , "break" , "alert" , "carry" , "catch" , "cause" , "chain" , "beach" , "cream" , "crime" , "cross" , "crowd" , "award" , "civil" , "brief" , "broke" , "debut" , "doubt" , "dozen" , "equal" , "error" , "every" , "extra" , "faith" , "guest" , "dealt" , "guide" , "heavy" , "night" , "funny" , "fifth" , "eager" , "earth" , "eight" , "first" , "input" , "metal" , "noted" , "month" , "ocean" , "learn" , "magic" , "mayor" , "paper" , "party" , "route" , "royal" , "scale" , "scene" , "refer" , "plain" , "proud" , "share" , "shelf" , "table" , "split" , "tower" , "trade" , "treat" , "truck" , "solve" , "upset" , "whole" , "valid" , "wrong" , "wheel" , "vital" , "voice" , "story" , "south" , "third" , "smart"};
+    public TMP_Text errorText;
+    private List<string> wordsToGuess = new List<string>();
     private string wordToGuess="";
-    public TMP_Text scoreText;
-    public TMP_Text guessCountText;
-    public GameObject instructionWindow;
-    private int guessCount = 0;
     private int score = 0;
     public GameObject guessRecordPrefab;
     public GameObject content;
     private List<GameObject> guessRecords = new List<GameObject>();
-    public void GuessClicked()
+    void Start()
     {
+        TextAsset wordList = Resources.Load<TextAsset>("5LetterWords");
+        wordsToGuess = FilterWordsWithoutDuplicates(wordList.text.Split('\n'));
+    }
+
+    private void GuessClicked()
+    {
+        errorText.text = "";
         if (wordToGuess == "") {
             wordToGuess = wordsToGuess[Random.Range(0, wordsToGuess.Count)];
         }
         guessField.text = guessField.text.ToLower();
         if (score == 100)
         {
-            guessCount = 0;
             foreach (var record in guessRecords)
             {
                 Destroy(record);
@@ -32,7 +37,6 @@ public class GameManager : MonoBehaviour
             guessRecords.Clear();
         }
         score = 0;
-        guessCount++;
         for(int i = 0; i < 5; i++)
         {
             if (guessField.text.Length > i)
@@ -41,14 +45,12 @@ public class GameManager : MonoBehaviour
                 {
                     score = score + 20;
                 }
-                else if (wordToGuess.Contains(guessField.text[i]))
+                else if (guessField.text.Contains(wordToGuess[i]))
                 {
                     score = score + 10;
                 }
             }
         }
-        scoreText.text = "Similarity: " + score;
-        guessCountText.text = "Guess Count: " + guessCount;
         if (score == 100)
         {
             wordToGuess = wordsToGuess[Random.Range(0, wordsToGuess.Count)];
@@ -57,8 +59,69 @@ public class GameManager : MonoBehaviour
         guessRecord.transform.Find("Guess").GetComponent<TextMeshProUGUI>().text = guessField.text;
         guessRecord.transform.Find("Score").GetComponent<TextMeshProUGUI>().text = score.ToString();
         guessRecords.Add(guessRecord);
+        guessField.text = "";
     }
-    public void InstructionCloser(bool close) {
-        instructionWindow.SetActive(close);
+
+    internal void Type(string letter)
+    {
+        if (letter == "backspace")
+        {
+            if (guessField.text.Length > 0)
+            {
+                guessField.text = guessField.text.Substring(0, guessField.text.Length - 1);
+            }
+        }
+        else if (letter == "enter")
+        {
+            if (HasDuplicateLetters(guessField.text))
+            {
+                errorText.text = "Your guess may not contain duplicate letters";
+            }
+            else if (guessField.text.Length != 5)
+            {
+                errorText.text = "Your guess must contain 5 letters";
+            }
+            else if (!wordsToGuess.Contains(guessField.text))
+            {
+                errorText.text = "Your guess must be a real word";
+            }
+            else
+            {
+                GuessClicked();
+            }
+        }
+        else
+        {
+            if (guessField.text.Length < 5)
+                guessField.text += letter;
+        }
+    }
+    private List<string> FilterWordsWithoutDuplicates(string[] words)
+    {
+        List<string> filteredWords = new List<string>();
+
+        foreach (string word in words)
+        {
+            if (!HasDuplicateLetters(word))
+            {
+                filteredWords.Add(word);
+            }
+        }
+
+        return filteredWords;
+    }
+    static bool HasDuplicateLetters(string word)
+    {
+        HashSet<char> encounteredCharacters = new HashSet<char>();
+
+        foreach (char letter in word)
+        {
+            if (!encounteredCharacters.Add(letter))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
