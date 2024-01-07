@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager i;
+    public bool isInColorMode = false;
     public TMP_InputField guessField;
     public TMP_Text errorText;
     private List<string> wordsToGuess = new List<string>();
@@ -15,8 +18,10 @@ public class GameManager : MonoBehaviour
     public GameObject guessRecordPrefab;
     public GameObject content;
     private List<GameObject> guessRecords = new List<GameObject>();
-    void Start()
+    internal List<KeyButton> buttonList = new List<KeyButton>();
+    void Awake()
     {
+        i = this;
         TextAsset wordList = Resources.Load<TextAsset>("5LetterWords");
         wordsToGuess = FilterWordsWithoutDuplicates(wordList.text.Split('\n'));
     }
@@ -54,6 +59,13 @@ public class GameManager : MonoBehaviour
         if (score == 100)
         {
             wordToGuess = wordsToGuess[Random.Range(0, wordsToGuess.Count)];
+        }
+        if (score == 0)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                buttonList.FirstOrDefault(x => x.name == guessField.text[i].ToString()).disableButton();
+            }
         }
         var guessRecord = Instantiate(guessRecordPrefab, content.transform);
         guessRecord.transform.Find("Guess").GetComponent<TextMeshProUGUI>().text = guessField.text;
@@ -99,21 +111,18 @@ public class GameManager : MonoBehaviour
     private List<string> FilterWordsWithoutDuplicates(string[] words)
     {
         List<string> filteredWords = new List<string>();
-
         foreach (string word in words)
         {
             if (!HasDuplicateLetters(word))
             {
-                filteredWords.Add(word);
+                filteredWords.Add(word.Replace("\r",""));
             }
         }
-
         return filteredWords;
     }
     static bool HasDuplicateLetters(string word)
     {
         HashSet<char> encounteredCharacters = new HashSet<char>();
-
         foreach (char letter in word)
         {
             if (!encounteredCharacters.Add(letter))
@@ -121,7 +130,6 @@ public class GameManager : MonoBehaviour
                 return true;
             }
         }
-
         return false;
     }
 }
